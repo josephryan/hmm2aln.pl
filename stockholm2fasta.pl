@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!perl
 
 # Sat Aug 25 16:14:08 EDT 2018
 # 
@@ -13,7 +13,7 @@ use JFR::Fasta;
 use File::Temp qw/tmpnam/;
 use Data::Dumper;
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 MAIN: {
     my $fa_out = tmpnam();
@@ -62,3 +62,41 @@ sub get_fa {
     }
     return \@defs;
 }
+
+__END__
+
+=head1 NAME
+
+B<stockholm2fasta.pl> - Convert a multiple sequence alignment from Stockholm to FASTA format
+
+=head1 AUTHOR
+
+Joseph F. Ryan <joseph.ryan@whitney.ufl.edu>
+
+=head1 SYNOPSIS
+
+stockholm2fasta.pl STOCKHOLM_FORMATTED_FILE
+
+=head1 BUGS
+
+Please report them to Joseph Ryan <joseph.ryan@whitney.ufl.edu>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2018,2019 Joseph F. Ryan
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+=cut
+
