@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!perl
 
 $|++;
 use strict;
@@ -8,7 +8,7 @@ use Pod::Usage;
 use JFR::Fasta;
 use Data::Dumper;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 our $HMMSEARCH = 'hmmsearch';
 our $ESL_REFORMAT = 'esl-reformat';
@@ -381,4 +381,65 @@ __END__
 
 B<hmm2align.pl> - use hmm to build alignment
 
+=head1 AUTHOR
 
+Joseph F. Ryan <joseph.ryan@whitney.ufl.edu>
+
+=head1 SYNOPSIS
+
+hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--nofillcnf=<nofill.conf>] [--help] [--version]
+
+=head1 OPTIONS
+
+=over
+
+=item B<--hmm>
+
+hmmfile (e.g. download http://pfam.xfam.org/family/PF00096/hmm)
+
+=item B<--name>
+name used for output files
+
+=item B<--fasta>
+FASTA-formatted file with multiple sequences
+
+=item B<--fasta_dir>
+directory with FASTA-formatted files
+
+=item B<--threads>
+number of threads to use for search
+
+=item B<--no_clean>
+do not remove intermediate files created by hmmer
+
+=item B<--nofillcnf>
+HMMer can make alignments from an hmmsearch but often misses the ends of alignments. hmm2aln.pl rescues these missing bits, and uses the --nofillcnf option (see nofill.hox.conf file) to make sure it doesn't rescue garbage.  The option requires that certain residue positions only be rescued if they are certain amino acids. See example file (https://github.com/josephryan/hmm2aln.pl/blob/master/nofill.hox.conf) for format.
+
+=item B<--help>
+print this manual
+
+=item B<--version>
+print the version. Overrides all other options.
+
+=head1 DESCRIPTION
+
+This program takes an HMM and a multi-sequence FASTA file (or directory of FASTA files) and produces a multi-sequence alignment.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2018,2019 Joseph F. Ryan
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
+
+=cut
