@@ -8,7 +8,7 @@ use Pod::Usage;
 use JFR::Fasta;
 use Data::Dumper;
 
-our $VERSION = '0.05';
+our $VERSION = '1.0.1';
 
 our $HMMSEARCH = 'hmmsearch';
 our $ESL_REFORMAT = 'esl-reformat';
