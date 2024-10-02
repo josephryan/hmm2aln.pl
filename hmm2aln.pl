@@ -8,8 +8,9 @@ use Pod::Usage;
 use JFR::Fasta;
 use Data::Dumper;
 
-our $VERSION = '1.0.1';
+our $VERSION = '2.0.0';
 
+# requires hmmsearch from hmmer package http://hmmer.org/
 our $HMMSEARCH = 'hmmsearch';
 our $ESL_REFORMAT = 'esl-reformat';
 
@@ -30,7 +31,7 @@ MAIN: {
         remove_gaps($rh_o);         #03 file
 
         unless (-z $rfa) {  # unless file is empty
-            my $fa_aln = fill_end_gaps($rh_o,$rfa,$ra_orig_defs); 
+            my $fa_aln = deal_with_gaps($rh_o,$rfa,$ra_orig_defs); 
             if ($rh_o->{'nofillcnf'}) {
                 replace_w_unfilled($rh_o,\$fa_aln,$ra_nfc,$ra_orig_defs);
             }
@@ -166,7 +167,7 @@ sub clean_up {
     warn "some intermediate files in $n/ were not deleted\n" if ($err);
 }
 
-sub fill_end_gaps {
+sub deal_with_gaps {
     my $rh_o    = shift;
     my $fa      = shift;
     my $ra_defs = shift;
@@ -183,7 +184,8 @@ sub fill_end_gaps {
         my $i = $1; 
         my $start = $2;
         my $end = $3;
-        if ($rec->{'seq'} =~ m/^-/ || $rec->{'seq'} =~ m/-$/) {
+        if ($rh_o->{'fillendgaps'} && 
+           ($rec->{'seq'} =~ m/^-/ || $rec->{'seq'} =~ m/-$/) ) {
             if ($rec->{'seq'} =~ m/^(-+)/) {
                 my $s_gaps = length $1;
                 my $j = $start - $s_gaps - 1;
@@ -207,20 +209,6 @@ sub fill_end_gaps {
     return $fa_aln;
 }
     
-
-sub _get_filled {
-    my $rec = shift;
-    my $ra_s = shift;
-    my @filled = ();
-    my %fil = ();
-    my $hd = $rec->{'seq'};
-    $hd =~ s/-/./g;
-    foreach my $rec (@{$ra_s}) {
-        $fil{$1}++ if ($rec->{'seq'} =~ m/($hd)/i);
-    }
-    @filled = keys %fil;
-    return \@filled;
-}
 
 sub _get_seqs {
      my $file = shift;
@@ -350,15 +338,16 @@ sub get_opts {
                 'no_clean' => '', 'nofillcnf' => '', 'help' => '', 
                 'version' => '');
     my $opt_results = Getopt::Long::GetOptions(
-                                         'hmm=s' => \$opts{'hmm'},
-                                         'name=s' => \$opts{'name'},
-                                         'fasta=s' => \$opts{'fasta'},
-                                         'fasta_dir=s' => \$opts{'fasta_dir'},
-                                         'threads=i' => \$opts{'threads'},
-                                         'no_clean' => \$opts{'no_clean'},
-                                         'nofillcnf=s' => \$opts{'nofillcnf'},
-                                         'help' => \$opts{'help'},
-                                         'version' => \$opts{'version'});
+                                      'hmm=s' => \$opts{'hmm'},
+                                      'name=s' => \$opts{'name'},
+                                      'fasta=s' => \$opts{'fasta'},
+                                      'fasta_dir=s' => \$opts{'fasta_dir'},
+                                      'threads=i' => \$opts{'threads'},
+                                      'no_clean' => \$opts{'no_clean'},
+                                      'fillendgaps' => \$opts{'fillendgaps'},
+                                      'nofillcnf=s' => \$opts{'nofillcnf'},
+                                      'help' => \$opts{'help'},
+                                      'version' => \$opts{'version'});
     die "$0 version $VERSION\n" if ($opts{'version'});
     pod2usage({-exitval => 0, -verbose => 2}) if($opts{'help'});
     usage() unless ($opts{'hmm'} && $opts{'name'});
@@ -367,12 +356,13 @@ sub get_opts {
         die "can not provide both --fasta AND --fasta_dir\n";
     }
     die "error: directory \"$opts{'name'}\" exists\n" if (-d $opts{'name'});
+    die "must use --fillendgaps when using --nofillcnf" if (!$opts{'fillendgaps'} && $opts{'nofillcnf'});
     mkdir $opts{'name'} or die "cannot mkdir $opts{'name'}:$!";
     return \%opts;    
 }
 
 sub usage {
-    die "usage: $0 --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--nofillcnf=<nofill.conf>] [--help] [--version]\n";
+    die "usage: $0 --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--fillendgaps] [--nofillcnf=<nofill.conf>] [--help] [--version]\n";
 }
 
 __END__
@@ -387,7 +377,7 @@ Joseph F. Ryan <joseph.ryan@whitney.ufl.edu>
 
 =head1 SYNOPSIS
 
-hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--nofillcnf=<nofill.conf>] [--help] [--version]
+hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--fillendgaps] [--nofillcnf=<nofill.conf>] [--help] [--version]
 
 =head1 OPTIONS
 
@@ -412,6 +402,9 @@ number of threads to use for search
 =item B<--no_clean>
 do not remove intermediate files created by hmmer
 
+=item B<--fillendgaps>
+In versions 1.0.1 and earlier, this was the default behavior. When making alignments from an hmmsearch, HMMer often misses the ends of alignments. When this parameter is added to the command line, hmm2aln.pl will pad end gap positions with those amino acids adjacent to the match. For example, if a domain was detected starting at position 103 in an amino acid sequence, and this position matched position 3 of the HMM, positions 101 and 102 from the sequence would be included in the recovered domain (instead of 2 gaps in those positions). This can be controled with the --nofillcnf option, which requires that fills only occur when certain residues are present at certain positions.
+
 =item B<--nofillcnf>
 HMMer can make alignments from an hmmsearch but often misses the ends of alignments. hmm2aln.pl rescues these missing bits, and uses the --nofillcnf option (see nofill.hox.conf file) to make sure it doesn't rescue garbage.  The option requires that certain residue positions only be rescued if they are certain amino acids. See example file (https://github.com/josephryan/hmm2aln.pl/blob/master/nofill.hox.conf) for format.
 
@@ -427,7 +420,7 @@ This program takes an HMM and a multi-sequence FASTA file (or directory of FASTA
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2019 Joseph F. Ryan
+Copyright (C) 2018,2019,2020,2021,2022,2023,2024 Joseph F. Ryan
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
