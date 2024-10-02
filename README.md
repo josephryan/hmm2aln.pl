@@ -1,6 +1,8 @@
 # hmm2aln.pl
 script to automate gene family phylogeny based using HMM
 
+## NOTE: 2.0 version (and beyond) does not fill end gaps by default. To fill end gaps use --filendgaps option
+
 ### REQUIREMENTS
 
 * HMMER
@@ -44,7 +46,7 @@ script takes an HMM and a multi-sequence FASTA file (or directory of FASTA files
 
 ### SYNOPSIS
 
-hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--nofillcnf=<nofill.conf>] [--help] [--version]
+hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir>} [--threads=<num>] [--no_clean] [--fillendgaps] [--nofillcnf=<nofill.conf>] [--help] [--version]
 
 ### OPTIONS
 
@@ -66,8 +68,9 @@ hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir
        --no_clean
             do not remove intermediate files created by hmmer
 
-       --nofillcnf
-            HMMer can make alignments from an hmmsearch but often misses the ends of alignments. hmm2aln.pl rescues these missing bits, and uses the --nofillcnf option (see nofill.hox.conf file) to make sure it doesn't rescue garbage.  The option requires that certain residue positions only be rescued if they are certain amino acids. See example file (https://github.com/josephryan/hmm2aln.pl/blob/master/nofill.hox.conf) for format.
+    --fillendgaps In versions 1.0.1 and earlier, this was the default behavior. When making alignments from an hmmsearch, HMMer often misses the ends of alignments. When this parameter is added to the command line, hmm2aln.pl will pad end gap positions with those amino acids adjacent to the match. For example, if a domain was detected starting at position 103 in an amino acid sequence, and this position matched position 3 of the HMM, positions 101 and 102 from the sequence would be included in the recovered domain (instead of 2 gaps in those positions). This can be controled with the --nofillcnf option, which requires that fills only occur when certain residues are present at certain positions.
+
+    --nofillcnf HMMer can make alignments from an hmmsearch but often misses the ends of alignments. hmm2aln.pl rescues these missing bits, and uses the --nofillcnf option (see nofill.hox.conf file) to make sure it doesn't rescue garbage. The option requires that certain residue positions only be rescued if they are certain amino acids. See example file (https://github.com/josephryan/hmm2aln.pl/blob/master/nofill.hox.conf) for format.
 
        --help
             print this manual
