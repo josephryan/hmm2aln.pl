@@ -84,7 +84,7 @@ script used by hmm2aln.pl to convert Stockholm-formatted multiple sequence align
 
 ## Cited
 
-hmm2aln.pl has been used in the multiple studies:
+hmm2aln.pl has been used in multiple studies:
 * https://doi.org/10.1093/gbe/evac144
 * https://doi.org/10.1093/gbe/evac172
 * https://doi.org/10.1093/molbev/msad137
