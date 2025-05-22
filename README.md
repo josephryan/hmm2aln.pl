@@ -82,10 +82,20 @@ hmm2aln.pl --hmm=<hmmfile> --name=<name> {--fasta=<fasta>|--fasta_dir=<fasta_dir
 
 script used by hmm2aln.pl to convert Stockholm-formatted multiple sequence alignment to FASTA-formatted sequence alignment. Uses esl-reformat program, which comes with HMMer, but since esl-reformat will not print fasta with gaps this script uses esl-reformat to print a fasta (long deflines) and phys format (short deflines but seqs w/gaps) and then prints a hybrid of the 2 (long defs and seqs w/gaps)
 
-BUGS
+## Cited
+
+hmm2aln.pl has been used in the multiple studies:
+--https://doi.org/10.1093/gbe/evac144
+--https://doi.org/10.1093/gbe/evac172
+--https://doi.org/10.1093/molbev/msad137
+--https://doi.org/10.1093/g3journal/jkaf110
+--https://doi.org/10.1093/gbe/evaa060
+--https://doi.org/10.1093/nargab/lqae072
+
+## BUGS
     Please report them to Joseph Ryan <joseph.ryan@whitney.ufl.edu>
 
-COPYRIGHT
+## COPYRIGHT
     Copyright (C) 2018,2019 Joseph F. Ryan
 
     This program is free software: you can redistribute it and/or modify it
