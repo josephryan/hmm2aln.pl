@@ -85,12 +85,12 @@ script used by hmm2aln.pl to convert Stockholm-formatted multiple sequence align
 ## Cited
 
 hmm2aln.pl has been used in the multiple studies:
---https://doi.org/10.1093/gbe/evac144
---https://doi.org/10.1093/gbe/evac172
---https://doi.org/10.1093/molbev/msad137
---https://doi.org/10.1093/g3journal/jkaf110
---https://doi.org/10.1093/gbe/evaa060
---https://doi.org/10.1093/nargab/lqae072
+* https://doi.org/10.1093/gbe/evac144
+* https://doi.org/10.1093/gbe/evac172
+* https://doi.org/10.1093/molbev/msad137
+* https://doi.org/10.1093/g3journal/jkaf110
+* https://doi.org/10.1093/gbe/evaa060
+* https://doi.org/10.1093/nargab/lqae072
 
 ## BUGS
     Please report them to Joseph Ryan <joseph.ryan@whitney.ufl.edu>
